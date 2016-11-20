@@ -8,12 +8,17 @@ let s:indent_unit = 2
 let s:rule = ['│', '─', '└', '├']
 
 function! list2tree#make() range
-  echo "firstline: " . a:firstline
-  echo "lastline: " . a:lastline
+  echo a:firstline
+  echo a:lastline
+  let s:firstline = a:firstline
+  let s:lastline = a:lastline
+  echo s:firstline
+  echo s:lastline
+
   " 各lineのdepthを取得
-  let [l:depths_texts, l:max_depth] = list2tree#get_lines_depths(a:firstline, a:lastline)
-  " let [l:depths_texts, l:max_depth] = list2tree#get_lines_depths()
-  echo l:depths_texts
+  " call list2tree#get_lines_depths()
+  let [l:depths_texts, l:max_depth] = list2tree#get_lines_depths()
+  " echo l:depths_texts
 
   " 各line depthに応じたruleを生成
   let l:tree = list2tree#make_line_rules(l:depths_texts, l:max_depth)
@@ -22,15 +27,15 @@ endfunction
 
 
 " 各lineのdepthを取得
-function! list2tree#get_lines_depths(firstline, lastline)
-  echo "firstline: " . a:firstline
-  echo "lastline: " . a:lastline
+function! list2tree#get_lines_depths()
+  echo s:firstline
+  echo s:lastline
   " 各lineの深さ
   let l:depths_texts = []
   let l:texts = []
   let l:depths = []
 
-  for l:line_number in range(a:firstline, a:lastline)
+  for l:line_number in range(s:firstline, s:lastline)
     let l:raw_line_text = getline(l:line_number)
 
     " get '* '
@@ -84,7 +89,7 @@ function! list2tree#make_line_rules(depths_texts, max_depth)
       endif
     elseif l:depth < l:previous_depth
       echo "elseif"
-      for l:i in range(l:depth, l:previous_depth)
+      for l:i in range(l:depth, l:previous_depth - 1)
         echo l:i
         let l:rules_flag_list[l:i - 1] = 1
       endfor
