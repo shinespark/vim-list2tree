@@ -8,21 +8,19 @@ let s:indent_unit = 2
 let s:rule = ['│', '─', '└', '├']
 
 function! list2tree#make() range
-  echo a:firstline
-  echo a:lastline
   let s:firstline = a:firstline
   let s:lastline = a:lastline
-  echo s:firstline
-  echo s:lastline
 
   " 各lineのdepthを取得
-  " call list2tree#get_lines_depths()
-  let [l:depths_texts, l:max_depth] = list2tree#get_lines_depths()
-  " echo l:depths_texts
+  let [l:depths_texts, l:depths] = list2tree#get_lines_depths()
 
   " 各line depthに応じたruleを生成
-  let l:tree = list2tree#make_line_rules(l:depths_texts, l:max_depth)
-  echo l:tree
+  let l:tree = list2tree#make_line_rules(l:depths_texts, l:depths)
+  echo ""
+  for l:i in l:tree
+    echo l:i
+  endfor
+  " echo l:tree
 endfunction
 
 
@@ -57,51 +55,75 @@ function! list2tree#get_lines_depths()
   endfor
 
   " return [l:lines, l:depths]
-  return [l:depths_texts, max(l:depths)]
+  for l:i in l:depths_texts
+    echo l:i
+  endfor
+
+  return [l:depths_texts, l:depths]
 endfunction
 
 
 " 各line depthに応じたruleを生成
-function! list2tree#make_line_rules(depths_texts, max_depth)
+function! list2tree#make_line_rules(depths_texts, depths)
   " depthごとにruleを
   let l:tree = []
-  let l:rules_flag_list = list2tree#make_empty_list(a:max_depth)
+  let l:rules_flag_list = list2tree#make_empty_list(max(a:depths))
   let l:previous_depth = 0
 
   " LINEづくり
   for [l:number, l:depth, l:text] in a:depths_texts
     let l:line = ''
 
-    " depthに応じてflagを追加
-    if l:depth > l:previous_depth
-      " 1個前の階層のフラグを1に
-      let l:rules_flag_list[l:previous_depth] = 1
-
-      " 次のlineのdepthをチェック(l:number = 次の行のインデックス)
-      let l:next_depth = get(a:depths_texts[1], l:number)
-
-      if l:depth == l:next_depth
-        let l:rules_flag_list[l:depth - 1] = 2
-      elseif l:depth > l:next_depth
-        let l:rules_flag_list[l:depth - 1] = 2
+    " 一階層目以外は、'└' or '├' 判定
+    if l:depth != 0
+      if l:number >= len(a:depths)
+        let l:is_last_depth = 1
       else
-        let l:rules_flag_list[l:depth - 1] = 3
+        let l:is_last_depth = list2tree#is_last_depth(l:depth, a:depths[l:number])
       endif
-    elseif l:depth < l:previous_depth
-      echo "elseif"
-      for l:i in range(l:depth, l:previous_depth - 1)
-        echo l:i
-        let l:rules_flag_list[l:i - 1] = 1
-      endfor
+      echo "is_last_depth: " . l:is_last_depth . l:text
+
+      if l:is_last_depth
+        let l:rules_flag_list[l:depth - 1] = 3
+      else
+        let l:rules_flag_list[l:depth - 1] = 2
+      endif
     endif
+
+    " depthに応じてflagを追加
+    " if l:depth > l:previous_depth
+      " " 1個前の階層のフラグを1に
+      " if l:previous_depth != 0
+        " let l:rules_flag_list[l:previous_depth - 1] = 1
+      " endif
+
+      " " 次のlineのdepthをチェック(l:number = 次の行のインデックス)
+      " let l:next_depth = a:depths_texts[l:number][1]
+      " echo 'l:previous_depth: ' . l:previous_depth
+      " echo 'l:depth         : ' . l:depth
+      " echo 'l:next_depth    : ' . l:next_depth
+
+      " if l:depth == l:next_depth
+        " let l:rules_flag_list[l:depth - 1] = 2
+      " elseif l:depth < l:next_depth
+        " let l:rules_flag_list[l:depth - 1] = 3
+      " elseif l:depth > l:next_depth
+        " let l:rules_flag_list[l:depth - 1] = 3
+      " endif
+
+    " elseif l:depth < l:previous_depth
+      " echo "elseif"
+      " for l:i in range(l:depth, l:previous_depth - 1)
+        " echo l:i
+        " let l:rules_flag_list[l:i - 1] = 0
+      " endfor
+
+    " elseif l:depth == l:previous_depth
+
+    " endif
 
 
     let l:line .= list2tree#get_rule_text(l:rules_flag_list)
-
-    " ここから罫線処理
-    " まず同階層の最後かチェック
-    " if list2tree#is_last_of_same_depth(l:number, l:depth)
-    " endif
 
     let l:line .= l:text
     echo l:rules_flag_list
@@ -118,7 +140,7 @@ endfunction
 function! list2tree#make_empty_list(length)
   let l:list = []
 
-  for i in range(a:length)
+  for l:i in range(a:length)
     call add(l:list, 0)
   endfor
 
@@ -137,8 +159,7 @@ function! list2tree#get_rule_text(rules_flag_list)
     elseif l:i == 3
       let l:text .= '└─ '
     else
-      let l:text .= '     '
-      " let l:text .= '     '
+      let l:text .= ''
     endif
   endfor
 
@@ -146,8 +167,13 @@ function! list2tree#get_rule_text(rules_flag_list)
 endfunction
 
 
-function! list2tree#is_last_of_same_depth(raw_line_text)
-  echo 'raw_line: ' . a:raw_line_text
+" 最終行かどうか確認する
+function! list2tree#is_last_depth(current_depth, next_depth)
+  if a:current_depth <= a:next_depth
+    return 0
+  else
+    return 1
+  endif
 endfunction
 
 
