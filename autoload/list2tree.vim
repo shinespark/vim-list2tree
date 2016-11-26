@@ -109,9 +109,13 @@ function! list2tree#make_tree(depths_texts, depths)
     let l:line .= list2tree#get_rule_text(l:rules_flag_list)
 
     " rstrip()
-    let l:line = substitute(l:line, '^\(.\{-}\)\s*$', '\1', '')
+    if l:depth != 0
+      let l:line = substitute(l:line, '^\(.\{-}\)\s*$', '\1', '') . ' '
+    else
+      let l:line = substitute(l:line, '^\s*\(.\{-}\)\s*$', '\1', '')
+    endif
     " join text
-    let l:line .= ' ' . l:text
+    let l:line .= l:text
 
     call add(l:tree, l:line)
     let l:previous_depth = l:depth
