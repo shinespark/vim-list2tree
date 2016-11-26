@@ -74,14 +74,31 @@ function! list2tree#make_line_rules(depths_texts, depths)
   for [l:number, l:depth, l:text] in a:depths_texts
     let l:line = ''
 
+    " 前回とdepthが変わっていたら前回のdepthを処理する
+    if l:depth != l:previous_depth && l:previous_depth != 0
+      " 1個前の階層のフラグを1に
+      if l:depth > l:previous_depth
+        if l:rules_flag_list[l:previous_depth - 1] == 3
+          let l:rules_flag_list[l:previous_depth - 1] = 0
+        elseif l:rules_flag_list[l:previous_depth - 1] == 2
+          let l:rules_flag_list[l:previous_depth - 1] = 1
+        endif
+      else
+        for l:i in range(l:depth + 1, l:previous_depth)
+          let l:rules_flag_list[l:i - 1] = 0
+        endfor
+      endif
+    endif
+
+    echo l:rules_flag_list
+
     " 一階層目以外は、'└' or '├' 判定
     if l:depth != 0
       if l:number >= len(a:depths)
         let l:is_last_depth = 1
       else
-        let l:is_last_depth = list2tree#is_last_depth(l:depth, a:depths[l:number])
+        let l:is_last_depth = list2tree#is_last_depth(l:depth, a:depths[l:number:])
       endif
-      echo "is_last_depth: " . l:is_last_depth . l:text
 
       if l:is_last_depth
         let l:rules_flag_list[l:depth - 1] = 3
@@ -90,42 +107,13 @@ function! list2tree#make_line_rules(depths_texts, depths)
       endif
     endif
 
-    " depthに応じてflagを追加
-    " if l:depth > l:previous_depth
-      " " 1個前の階層のフラグを1に
-      " if l:previous_depth != 0
-        " let l:rules_flag_list[l:previous_depth - 1] = 1
-      " endif
-
-      " " 次のlineのdepthをチェック(l:number = 次の行のインデックス)
-      " let l:next_depth = a:depths_texts[l:number][1]
-      " echo 'l:previous_depth: ' . l:previous_depth
-      " echo 'l:depth         : ' . l:depth
-      " echo 'l:next_depth    : ' . l:next_depth
-
-      " if l:depth == l:next_depth
-        " let l:rules_flag_list[l:depth - 1] = 2
-      " elseif l:depth < l:next_depth
-        " let l:rules_flag_list[l:depth - 1] = 3
-      " elseif l:depth > l:next_depth
-        " let l:rules_flag_list[l:depth - 1] = 3
-      " endif
-
-    " elseif l:depth < l:previous_depth
-      " echo "elseif"
-      " for l:i in range(l:depth, l:previous_depth - 1)
-        " echo l:i
-        " let l:rules_flag_list[l:i - 1] = 0
-      " endfor
-
-    " elseif l:depth == l:previous_depth
-
-    " endif
-
-
     let l:line .= list2tree#get_rule_text(l:rules_flag_list)
 
-    let l:line .= l:text
+    " rstrip()
+    let l:line = substitute(l:line, '^\(.\{-}\)\s*$', '\1', '')
+
+
+    let l:line .= ' ' . l:text
     echo l:rules_flag_list
     echo l:line
 
@@ -159,7 +147,7 @@ function! list2tree#get_rule_text(rules_flag_list)
     elseif l:i == 3
       let l:text .= '└─ '
     else
-      let l:text .= ''
+      let l:text .= '     '
     endif
   endfor
 
@@ -168,12 +156,16 @@ endfunction
 
 
 " 最終行かどうか確認する
-function! list2tree#is_last_depth(current_depth, next_depth)
-  if a:current_depth <= a:next_depth
-    return 0
-  else
-    return 1
-  endif
+function! list2tree#is_last_depth(current_depth, depths)
+  for l:i in a:depths
+    if a:current_depth < l:i
+      continue
+    elseif a:current_depth == l:i
+      return 0
+    else
+      return 1
+    endif
+  endfor
 endfunction
 
 
