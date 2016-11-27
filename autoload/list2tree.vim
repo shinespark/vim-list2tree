@@ -6,13 +6,10 @@ let s:indent_unit = 2
 function! list2tree#make() range
   let s:firstline = a:firstline
   let s:lastline = a:lastline
-  echo s:firstline
-  echo s:lastline
 
   " 各lineのdepthを取得
   try
     let [l:depths_texts, l:depths] = list2tree#get_lines_depths()
-    echo l:depths_texts
   catch
     return
   endtry
@@ -50,7 +47,6 @@ function! list2tree#get_lines_depths() abort
 
     " depthを計算
     let l:depth = l:match_end / s:indent_unit - 1
-    echo l:line_number . "  depth: " . l:depth . " line_text: " . l:line_text
 
     call add(l:depths_texts, [l:line_number, l:depth, l:line_text])
     call add(l:depths, l:depth)
@@ -60,7 +56,6 @@ function! list2tree#get_lines_depths() abort
 endfunction
 
 
-" 各line depthに応じたruleを生成
 function! list2tree#make_tree(depths_texts, depths)
   " depthごとにruleを
   let l:tree = []
@@ -70,8 +65,6 @@ function! list2tree#make_tree(depths_texts, depths)
   " LINEづくり
   for [l:number, l:depth, l:text] in a:depths_texts
     let l:number = l:number - s:firstline + 1
-    echo ' '
-    echo l:number
     let l:line = ''
 
     " 前回とdepthが変わっていたら前回のdepthを処理する
@@ -90,15 +83,13 @@ function! list2tree#make_tree(depths_texts, depths)
       endif
     endif
 
-    echo 'text:         ' . l:text
-    " 一階層目以外は、'└' or '├' 判定
+    " set rules
     if l:depth != 0
       if l:number >= len(a:depths)
         let l:is_last_depth = 1
       else
         let l:is_last_depth = list2tree#is_last_depth(l:depth, a:depths[l:number:])
       endif
-      echo 'is_last_depth:' . l:is_last_depth
 
       if l:is_last_depth
         let l:rules_flag_list[l:depth - 1] = 3
@@ -107,16 +98,17 @@ function! list2tree#make_tree(depths_texts, depths)
       endif
     endif
 
-    " echo l:rules_flag_list
+    " join rule strings
+    let l:line .= list2tree#make_rule_strings(l:rules_flag_list)
 
-    let l:line .= list2tree#get_rule_text(l:rules_flag_list)
-
-    " rstrip()
     if l:depth != 0
+      " rstrip
       let l:line = substitute(l:line, '^\(.\{-}\)\s*$', '\1', '') . ' '
     else
+      " strip
       let l:line = substitute(l:line, '^\s*\(.\{-}\)\s*$', '\1', '')
     endif
+
     " join text
     let l:line .= l:text
 
@@ -139,7 +131,7 @@ function! list2tree#make_empty_list(length)
 endfunction
 
 
-function! list2tree#get_rule_text(rules_flag_list)
+function! list2tree#make_rule_strings(rules_flag_list)
   let l:text = ''
 
   for l:i in a:rules_flag_list
@@ -158,7 +150,6 @@ function! list2tree#get_rule_text(rules_flag_list)
 endfunction
 
 
-" 最終行かどうか確認する
 function! list2tree#is_last_depth(current_depth, after_depths)
   for l:i in a:after_depths
     if a:current_depth < l:i
