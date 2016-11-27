@@ -12,12 +12,12 @@ function! list2tree#make() range
   let s:lastline = a:lastline
 
   try
-    let [l:depths_texts, l:depths] = list2tree#parse_lines()
+    let [l:parse_lines_list, l:depths] = list2tree#parse_lines()
   catch
     return
   endtry
 
-  let l:tree = list2tree#make_tree(l:depths_texts, l:depths)
+  let l:tree = list2tree#make_tree(l:parse_lines_list, l:depths)
 
   for l:line_number in range(s:firstline, s:lastline)
     call setline(l:line_number, l:tree[l:line_number - s:firstline])
