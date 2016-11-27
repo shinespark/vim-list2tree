@@ -26,7 +26,7 @@ endfunction
 
 
 function! list2tree#parse_lines() abort
-  let l:depths_texts = []
+  let l:parse_lines_list = []
   let l:depths = []
 
   for l:line_number in range(s:firstline, s:lastline)
@@ -48,26 +48,27 @@ function! list2tree#parse_lines() abort
     " calculate depth
     let l:depth = l:match_end / s:INDENT_UNIT - 1
 
-    call add(l:depths_texts, [l:line_number, l:depth, l:line_text])
+    call add(l:parse_lines_list, [l:line_number, l:depth, l:line_text])
     call add(l:depths, l:depth)
   endfor
 
-  return [l:depths_texts, l:depths]
+  return [l:parse_lines_list, l:depths]
 endfunction
 
 
-function! list2tree#make_tree(depths_texts, depths)
+function! list2tree#make_tree(parse_lines_list, depths)
   let l:tree = []
   let l:rules_flag_list = list2tree#make_empty_list(max(a:depths))
   let l:previous_depth = 0
 
-  for [l:absolute_line_number, l:depth, l:original_text] in a:depths_texts
+  for [l:absolute_line_number, l:depth, l:original_text] in a:parse_lines_list
     let l:text = ''
     let l:relative_line_number = l:absolute_line_number - s:firstline + 1
 
+    " set previous depths rules
     if l:depth != l:previous_depth && l:previous_depth != 0
-      " fix previous depths rule
       if l:depth > l:previous_depth
+        " fix previous depths rule
         if l:rules_flag_list[l:previous_depth - 1] == s:LAST_RULE
           let l:rules_flag_list[l:previous_depth - 1] = s:NON_RULE
         elseif l:rules_flag_list[l:previous_depth - 1] == s:CONTINUOUS_RULE
@@ -75,12 +76,12 @@ function! list2tree#make_tree(depths_texts, depths)
         endif
       else
         for l:i in range(l:depth + 1, l:previous_depth)
-          let l:rules_flag_list[l:i - 1] = 0
+          let l:rules_flag_list[l:i - 1] = s:NON_RULE
         endfor
       endif
     endif
 
-    " set rules
+    " set current rule
     if l:depth != 0
       if l:relative_line_number >= len(a:depths)
         let l:is_last_of_same_depth = 1
