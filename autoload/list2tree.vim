@@ -70,6 +70,7 @@ function! list2tree#make_tree(depths_texts, depths)
   " LINEづくり
   for [l:number, l:depth, l:text] in a:depths_texts
     let l:number = l:number - s:firstline + 1
+    echo ' '
     echo l:number
     let l:line = ''
 
@@ -89,6 +90,7 @@ function! list2tree#make_tree(depths_texts, depths)
       endif
     endif
 
+    echo 'text:         ' . l:text
     " 一階層目以外は、'└' or '├' 判定
     if l:depth != 0
       if l:number >= len(a:depths)
@@ -96,6 +98,7 @@ function! list2tree#make_tree(depths_texts, depths)
       else
         let l:is_last_depth = list2tree#is_last_depth(l:depth, a:depths[l:number:])
       endif
+      echo 'is_last_depth:' . l:is_last_depth
 
       if l:is_last_depth
         let l:rules_flag_list[l:depth - 1] = 3
@@ -104,7 +107,7 @@ function! list2tree#make_tree(depths_texts, depths)
       endif
     endif
 
-    echo l:rules_flag_list
+    " echo l:rules_flag_list
 
     let l:line .= list2tree#get_rule_text(l:rules_flag_list)
 
@@ -156,8 +159,8 @@ endfunction
 
 
 " 最終行かどうか確認する
-function! list2tree#is_last_depth(current_depth, depths)
-  for l:i in a:depths
+function! list2tree#is_last_depth(current_depth, after_depths)
+  for l:i in a:after_depths
     if a:current_depth < l:i
       continue
     elseif a:current_depth == l:i
@@ -166,6 +169,8 @@ function! list2tree#is_last_depth(current_depth, depths)
       return 1
     endif
   endfor
+
+  return 1
 endfunction
 
 
