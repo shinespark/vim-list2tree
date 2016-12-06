@@ -19,7 +19,7 @@ Write directories / files by list.
   * file
 ```
 
-Press `:'<,'>List2Tree`
+Select target lines by linewise-visual, Type `:'<,'>List2Tree` .
 
 ```
 .
