@@ -140,7 +140,7 @@ function! list2tree#make_rule_strings(rules_flag_list)
     elseif l:i == s:LAST_RULE
       let l:text .= '└── '
     else
-      let l:text .= '     '
+      let l:text .= '    '
     endif
   endfor
 
