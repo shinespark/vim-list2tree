@@ -4,8 +4,8 @@ set cpo&vim
 let s:INDENT_UNIT     = 2
 let s:NON_RULE        = 0
 let s:VERTICAL_RULE   = 1 "│
-let s:CONTINUOUS_RULE = 2 "├─
-let s:LAST_RULE       = 3 "└─
+let s:CONTINUOUS_RULE = 2 "├──
+let s:LAST_RULE       = 3 "└──
 
 function! list2tree#make() range
   let s:firstline = a:firstline
@@ -136,9 +136,9 @@ function! list2tree#make_rule_strings(rules_flag_list)
     if l:i == s:VERTICAL_RULE
       let l:text .= '│   '
     elseif l:i == s:CONTINUOUS_RULE
-      let l:text .= '├─ '
+      let l:text .= '├── '
     elseif l:i == s:LAST_RULE
-      let l:text .= '└─ '
+      let l:text .= '└── '
     else
       let l:text .= '     '
     endif
