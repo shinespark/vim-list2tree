@@ -23,15 +23,15 @@ Select target lines by linewise-visual, Type `:'<,'>List2Tree` .
 
 ```
 .
-├─ dir
-│   ├─ file
-│   ├─ file
-│   └─ file
-├─ dir
-│   └─ dir
-│        ├─ file
-│        └─ file
-└─ file
+├── dir
+│   ├── file
+│   ├── file
+│   └── file
+├── dir
+│   └── dir
+│       ├── file
+│       └── file
+└── file
 ```
 
 
