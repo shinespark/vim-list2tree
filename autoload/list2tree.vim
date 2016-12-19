@@ -35,7 +35,7 @@ function! list2tree#parse_lines() abort
     " get '* '
     let l:match_end = matchend(l:raw_line_text, '^\ *\*\ ', 0)
     if l:match_end == -1
-      echo 'List2Tree: Syntax error. Could''t find  *.'
+      echo 'List2Tree: Syntax error. Couldn''t find  *.'
       return
     endif
 
