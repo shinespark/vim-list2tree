@@ -65,10 +65,10 @@ function! list2tree#make_tree(parse_lines_list, depths)
     let l:text = ''
     let l:relative_line_number = l:absolute_line_number - s:firstline + 1
 
-    " set previous depths rules
+    " set previous depth rules
     if l:depth != l:previous_depth && l:previous_depth != 0
       if l:depth > l:previous_depth
-        " fix previous depths rule
+        " fix previous depth rule
         if l:rules_flag_list[l:previous_depth - 1] == s:LAST_RULE
           let l:rules_flag_list[l:previous_depth - 1] = s:NON_RULE
         elseif l:rules_flag_list[l:previous_depth - 1] == s:CONTINUOUS_RULE
