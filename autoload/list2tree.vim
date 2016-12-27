@@ -84,7 +84,7 @@ function! list2tree#make_tree(parse_lines_list, depths)
     " set current rule
     if l:depth != 0
       if l:relative_line_number >= len(a:depths)
-        let l:is_last_of_same_depth = 1
+        let l:is_last_of_same_depth = v:true
       else
         let l:is_last_of_same_depth = list2tree#is_last_of_same_depth(l:depth, a:depths[l:relative_line_number:])
       endif
