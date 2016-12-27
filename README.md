@@ -19,7 +19,7 @@ Write directories / files by list.
   * file
 ```
 
-Select target lines by linewise-visual, Type `:'<,'>List2Tree` .
+Select target lines by linewise-visual, type `:'<,'>List2Tree` .
 
 ```
 .
@@ -35,7 +35,7 @@ Select target lines by linewise-visual, Type `:'<,'>List2Tree` .
 ```
 
 
-If you need to using keymapping, add this vim setting.
+If you need to use keymapping, add this vim setting.
 
 ```
 vnoremap <c-t> :<c-u>'<,'>List2Tree<CR>
