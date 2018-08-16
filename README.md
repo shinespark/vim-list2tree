@@ -1,6 +1,6 @@
 # vim-list2tree
 
-Change to tree from list of markdown plugin.
+Convert a markdown list format to a tree format.
 
 ## Usage
 
