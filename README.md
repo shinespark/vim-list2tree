@@ -40,3 +40,11 @@ If you need to use keymapping, add this vim setting.
 ```
 vnoremap <c-t> :<c-u>'<,'>List2Tree<CR>
 ```
+
+## Install
+
+### dein.vim
+
+```
+call dein#add('shinespark/vim-list2tree', {'lazy': 1, 'on_cmd': 'List2Tree'})
+```
