@@ -1,10 +1,12 @@
 # vim-list2tree
 
-Convert a markdown list format to a tree format.
+Convert markdown list format to tree format.
+
+
 
 ## Usage
 
-Write directories / files by list.
+Write directories / files by markdown list.
 
 ```
 * .
