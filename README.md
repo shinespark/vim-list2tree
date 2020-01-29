@@ -2,7 +2,7 @@
 
 Convert markdown list format to tree format.
 
-
+![images](https://user-images.githubusercontent.com/12206768/73352415-68fafa80-42d4-11ea-9339-db05f5b40dc3.gif)
 
 ## Usage
 
